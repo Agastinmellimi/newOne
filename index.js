@@ -2,10 +2,18 @@ const express = require('express');
 const {open} = require('sqlite');
 const sqlite3 = require('sqlite3')
 const path = require('path');
+const cors = require("cors");
 
 const app = express();
 
 app.use(express.json());
+app.use(cors())
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, HEAD, OPTIONS, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Origin, X-Requsted-With, Accept, Authorization');
+  next();
+});
 
 const dbPath = path.join(__dirname, 'userData.db')
 let db = null;
