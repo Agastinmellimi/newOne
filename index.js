@@ -2,6 +2,8 @@ const express = require('express');
 const {open} = require('sqlite');
 const sqlite3 = require('sqlite3')
 const path = require('path');
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken')
 const cors = require("cors");
 
 const app = express();
@@ -26,6 +28,7 @@ const intializeServer = async () => {
     });
     app.listen(3005, () => {
       console.log("Server Running at http://localhost:3005/");
+      
     });
   } catch (e) {
     console.log(`DB Error: ${e.message}`);
@@ -35,7 +38,28 @@ const intializeServer = async () => {
 
 intializeServer()
 
-
+// chech Authentication Middleware function 
+const checkAuthentication = (req, res, next) => {
+  let jwtToken;
+  const authHeader = req.headers["authorization"]
+  if (authHeader !== undefined) {
+    jwtToken = authHeader.split(' ')[1];
+  }
+  if (jwtToken === undefined) {
+    res.status(401)
+    res.send('Invalid User')
+  } else {
+    jwt.verify(jwtToken, "SECRET_TOKEN", async (error, payload) => {
+      if (error) {
+        res.status(401)
+        res.send('Invalid User')
+      } else {
+        req.username = payload.username;
+        next()
+      }
+    })
+  }
+}
 
 
 // Get all services in Service table
@@ -68,7 +92,217 @@ app.post('/services', async (req, res) => {
   
 })
 
+// Send message api store the values in Messages table
+// const sequence = /^\d{10}$/;
+// number.toString().match(sequence);
+app.post('/send-message', async (request, response) => {
+  const {name, number, message} = request.body
+  const createSendMessageQuery = `INSERT INTO Messages(name, number, message) VALUES("${name}", "${number}", "${message}");`
+  const sequence = /^\d{10}$/;
+  if (number.match(sequence)) {
+    await db.run(createSendMessageQuery);
+    response.send('Send Message Successfully');
+  } else {
+      response.send({err_msg: 'Please Check Your Number'});
+  }
+})
 
+// Get the Messages from Messages table
+app.get('/messages', async (request, response) => {
+    const getMessagesQuery = `SELECT * FROM Messages;`
+    const messagesArray = await db.all(getMessagesQuery)
+    response.send(messagesArray)
+})
+
+
+// DELETE MESSAGE 
+app.delete("/messages", checkAuthentication, async (request, response) => {
+  const {id} = request.body 
+  const deleteQuery = `DELETE FROM Messages WHERE id=${id};`
+  await db.run(deleteQuery)
+  response.send("Message Delete Successfully");
+})
+
+
+// Register user
+app.post("/register", async (request, response) => {
+  const { username, password } = request.body;
+  // Hashed Password set
+  const hashPassword = await bcrypt.hash(password, 10);
+  const selectUserQuery = `SELECT * FROM user WHERE username = '${username}';`;
+  const dbUser = await db.get(selectUserQuery);
+  if (dbUser === undefined) {
+    const createUserQuery = `
+            INSERT INTO user (username, password)
+            VALUES ('${username}', '${hashPassword}');`;
+      await db.run(createUserQuery);
+      response.send("User created successfully");
+  } else {
+    response.status(400);
+    response.send("User already exists");
+  }
+});
+
+// Login User
+app.post('/login', async (request, response) => {
+  const { username, password } = request.body;
+  const selectUserQuery = `SELECT * FROM user WHERE username = '${username}';`;
+  const dbUser = await db.get(selectUserQuery);
+  if (dbUser === undefined) {
+    response.status(400);
+    response.send({err_msg: "Invalid user"});
+  } else {
+    // Compoare hashed password
+    const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
+    // if password match uniqe jwt token sended
+    if (isPasswordMatched === true) {
+      const payload = {
+        username: username,
+      };
+      const jwtToken = jwt.sign(payload, "SECRET_TOKEN");
+      response.send({ jwtToken });
+    } else {
+      response.status(400);
+      response.send({err_msg: "Invalid password"});
+    }
+  }
+})
+
+// Accesing JwtToken
+// const authHeader = request.headers['authorization']
+app.get("/users", checkAuthentication, async (request, response) => {
+     const getUsersQuery = `SELECT * FROM user;`
+     const usersArray = await db.all(getUsersQuery);
+     response.send(usersArray)
+})
+
+app.delete("/users", checkAuthentication, async(request, response) => {
+  const {username} = request.body
+  const deleteUserQuery = `DELETE FROM user WHERE username="${username}";`
+  await db.run(deleteUserQuery)
+  response.send('Delete User Successfully')
+})
+
+// add values Children Table 
+app.post('/children', checkAuthentication, async(request, response) => {
+  const {name, gender} = request.body 
+  const existChildrenQuery = `SELECT * FROM children WHERE name="${name}";`
+  const existChildren = await db.get(existChildrenQuery);
+  const addChildrenQuery = `INSERT INTO children(name, gender) VALUES("${name}", "${gender}");`;
+  if (existChildren === undefined) {
+    await db.run(addChildrenQuery);
+    response.send("Add Child Successfilly");
+  } else {
+    response.status(400);
+    response.send({
+      err_msg: 'Child Already Exist',
+    })
+  }
+})
+
+// Delete Children 
+app.delete('/children', checkAuthentication, async (request, response) => {
+   const {name} = request.body 
+   const deleteChild = `DELETE FROM children WHERE name="${name}";`
+   db.run(deleteChild);
+   response.send('Delete Child Succesfully')
+})
+
+// Get All Childrens data 
+app.get('/children', async(request, response) => {
+  const getQuery = `SELECT * FROM children;`
+  const childrenArray = await db.all(getQuery);
+  response.send(childrenArray);
+})
+
+// Attendance to children YYYY-MM-DD
+app.post('/attendance', checkAuthentication, async(request, response) => {
+      const {childId, date, present} = request.body
+      const getDateStatusChild = `SELECT * FROM Attendance WHERE childId=${childId} AND date='${date}';`
+      const childrenStatus = await db.get(getDateStatusChild);
+      console.log(childrenStatus)
+      const currentDate = new Date() 
+      
+      const fromatteddate = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
+      const sendDate = date.split('-')
+      // const checkCurrentDate = fromatteddate.split("-")[2] === `${parseInt(sendDate[2])}`
+      // const checkYear = fromatteddate.split('-')[0] === sendDate[0]
+      // const checkMonth = fromatteddate.split('-')[1] === `${parseInt(sendDate[1])}`
+      
+      
+      // if current Date
+      if (childrenStatus === undefined) {
+        // Add Children Status
+        const addAttendanceQuery = `INSERT INTO Attendance(childId, date, present) VALUES(${childId}, "${date}", ${present});`;
+        await db.run(addAttendanceQuery)
+        response.send('Attendance Send Successfully')
+      } else {
+        // UpDate Children Status
+        const statusUPdateQuery = `UPDATE Attendance
+        SET present=${present}
+        WHERE childId=${childId} and date="${date}";`
+        await db.run(statusUPdateQuery)
+        response.send('Attendance Updated Successfully')
+      }
+            
+    
+      
+})
+
+// GET ALL STUDENTS ATTENDANCE DETAILS 
+app.get("/attendance-details", async (request, response) => {
+  const getAttendanceQuery =  `SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS presents FROM children INNER JOIN
+  Attendance ON children.id = attendance.childId GROUP BY children.name;`
+  const attendanceDetailsArray = await db.all(getAttendanceQuery);
+  response.send(attendanceDetailsArray);
+})
+
+// Get specific Date Attendance details QUERY
+app.get('/date-attendance', async (request, response) => {
+  const {date} = request.body
+  const dateViceAttendanceQuery = `SELECT children.name, Attendance.present  AS presents FROM children INNER JOIN
+  Attendance ON children.id = attendance.childId WHERE Attendance.date = "${date}";`
+  const dateViceAttendanceArray = await db.all(dateViceAttendanceQuery)
+  response.send(dateViceAttendanceArray)
+})
+
+// get distinct dates from Attendance Table 
+app.get('/attendance-dates', async (request, response) => {
+  const getExistDatesQury = `SELECT DISTINCT date FROM Attendance;`
+  const existDates = await db.all(getExistDatesQury)
+  response.send(existDates);
+})
 
 
 module.exports = app;
+
+const Childrens = [
+  {"name": "RISHI CHELLE", "gender": "MALE"}, 
+  {"name": "MOJESH CHELLE", "gender": "MALE"}, 
+  {"name": "HARSHA VARDHAN", "gender": "MALE"}, 
+  {"name": "JOSHNA CHELLE", "gender": "FEMALE"}, 
+  {"name": "UDAY KRISHNA KURMA", "gender": "MALE"}, 
+  {"name": "SRINIVAS KURMA", "gender": "MALE"}, 
+  {"name": "PRAVEEN KUMAR PALLI", "gender": "MALE"},
+  {"name": "RAVISAGAR NEPA", "gender": "MALE"}, 
+  {"name": "HANI MADHABATHULA", "gender": "FEMALE"},
+  {"name": "ADAY MADHABATHULA", "gender": "FEMALE"},
+  {"name": "SANTHOSH DHANAM", "gender": "MALE"}
+]
+// Get All children ATTENDANCE DETAILS QUERY
+// SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS attendance FROM children INNER JOIN
+//  Attendance ON children.id = attendance.childId GROUP BY children.name;
+
+// Get specific Date Attendance details QUERY
+// SELECT children.name, Attendance.present  AS attendance FROM children INNER JOIN
+//  Attendance ON children.id = attendance.childId WHERE Attendance.date = "2024-02-04";
+
+// GET DISTINCT DATES FROM Attendance table
+// SELECT DISTINCT date FROM Attendance;
+
+
+// Day find to date
+// var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+//   var d = new Date(date string fromat);
+//   var dayName = days[d.getDay()];
+//   console.log(dayName)
