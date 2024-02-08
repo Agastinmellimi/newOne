@@ -103,6 +103,7 @@ app.post('/send-message', async (request, response) => {
     await db.run(createSendMessageQuery);
     response.send('Send Message Successfully');
   } else {
+      response.status(400)
       response.send({err_msg: 'Please Check Your Number'});
   }
 })
@@ -126,15 +127,15 @@ app.delete("/messages", checkAuthentication, async (request, response) => {
 
 // Register user
 app.post("/register", async (request, response) => {
-  const { username, password } = request.body;
+  const { username, password, email, gender } = request.body;
   // Hashed Password set
   const hashPassword = await bcrypt.hash(password, 10);
   const selectUserQuery = `SELECT * FROM user WHERE username = '${username}';`;
   const dbUser = await db.get(selectUserQuery);
   if (dbUser === undefined) {
     const createUserQuery = `
-            INSERT INTO user (username, password)
-            VALUES ('${username}', '${hashPassword}');`;
+            INSERT INTO user (username, password, email, gender)
+            VALUES ('${username}', '${hashPassword}'), '${email}', '${gender}';`;
       await db.run(createUserQuery);
       response.send("User created successfully");
   } else {
@@ -175,6 +176,73 @@ app.get("/users", checkAuthentication, async (request, response) => {
      const usersArray = await db.all(getUsersQuery);
      response.send(usersArray)
 })
+
+// change name user
+app.put('/change-username', checkAuthentication, async(request, response) => {
+    const {email, password, newName} = request.body
+    const emailQuery = `SELECT * FROM user WHERE email="${email}";`
+    const existEmail = await db.get(emailQuery);
+    if (existEmail !== undefined) {
+      const isPasswordMatched = await bcrypt.compare(password, existEmail.password);
+      if (isPasswordMatched) {
+        const updateUsernameQuery = `UPDATE user SET username="${newName}" WHERE email="${email}"`;
+        await db.run(updateUsernameQuery)
+        response.send("Username updated Success Fully");
+      } else {
+        response.status(400)
+        response.send({err_msg: "Invalid Password"})
+      }
+    } else {
+      response.status(400)
+      response.send({err_msg: "Email is not exist"})
+    }
+})
+
+// change user Password 
+app.put('/change-password', checkAuthentication, async(request, response) => {
+  const {username, email, newPassword} = request.body
+  const dbUserQuery = `SELECT * FROM user WHERE username="${username}";`
+  const dbUser = await db.get(dbUserQuery);
+  const hashPassword = await bcrypt.hash(newPassword, 10);
+  if (dbUser !== undefined) {
+    const emailQuery = `SELECT * FROM user WHERE email="${email}";`
+    const emailExist = await db.get(emailQuery)
+    if (emailExist !== undefined) {
+      const updateUsernameQuery = `UPDATE user SET password="${hashPassword}" WHERE email="${email}"`;
+      await db.run(updateUsernameQuery)
+      response.send("Password updated Success Fully");
+    } else {
+      response.status(400)
+      response.send({err_msg: "Email is not exist"})
+    }
+  } else {
+    response.status(400)
+    response.send({err_msg: "Invalid User"})
+  }
+})
+
+// change Email user
+app.put('/change-email', checkAuthentication, async(request, response) => {
+  const {username, password, newEmail} = request.body
+  const dbUserQuery = `SELECT * FROM user WHERE username="${username}";`
+  const dbUser = await db.get(dbUserQuery);
+  if (dbUser !== undefined) {
+    const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
+    if (isPasswordMatched) {
+      const updateUsernameQuery = `UPDATE user SET email="${newEmail}" WHERE username="${username}"`;
+      await db.run(updateUsernameQuery)
+      response.send("Email updated Success Fully");
+    } else {
+      response.status(400)
+      response.send({err_msg: "Inavalid Password"})
+    }
+    
+  } else {
+    response.status(400)
+    response.send({err_msg: "Inavalid User"})
+  }
+})
+
 
 app.delete("/users", checkAuthentication, async(request, response) => {
   const {username} = request.body
