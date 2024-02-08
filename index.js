@@ -102,7 +102,7 @@ app.post('/send-message', async (request, response) => {
   const sequence = /^\d{10}$/;
   if (number.match(sequence)) {
     await db.run(createSendMessageQuery);
-    res.status(200)
+    response.status(200)
     response.send('Send Message Successfully');
   } else {
       response.status(400)
@@ -123,6 +123,7 @@ app.delete("/messages", checkAuthentication, async (request, response) => {
   const {id} = request.body 
   const deleteQuery = `DELETE FROM Messages WHERE id=${id};`
   await db.run(deleteQuery)
+  response.status(200)
   response.send("Message Delete Successfully");
 })
 
@@ -139,7 +140,7 @@ app.post("/register", async (request, response) => {
             INSERT INTO user (username, password, email, gender)
             VALUES ('${username}', '${hashPassword}'), '${email}', '${gender}';`;
       await db.run(createUserQuery);
-      res.status(200)
+      response.status(200)
       response.send("User created successfully");
   } else {
     response.status(400);
@@ -190,7 +191,7 @@ app.put('/change-username', checkAuthentication, async(request, response) => {
       if (isPasswordMatched) {
         const updateUsernameQuery = `UPDATE user SET username="${newName}" WHERE email="${email}"`;
         await db.run(updateUsernameQuery)
-        res.status(200)
+        response.status(200)
         response.send("Username updated Success Fully");
       } else {
         response.status(400)
@@ -214,7 +215,7 @@ app.put('/change-password', checkAuthentication, async(request, response) => {
     if (emailExist !== undefined) {
       const updateUsernameQuery = `UPDATE user SET password="${hashPassword}" WHERE email="${email}"`;
       await db.run(updateUsernameQuery)
-      res.status(200)
+      response.status(200)
       response.send("Password updated Success Fully");
     } else {
       response.status(400)
@@ -236,7 +237,7 @@ app.put('/change-email', checkAuthentication, async(request, response) => {
     if (isPasswordMatched) {
       const updateUsernameQuery = `UPDATE user SET email="${newEmail}" WHERE username="${username}"`;
       await db.run(updateUsernameQuery)
-      res.status(200)
+      response.status(200)
       response.send("Email updated Success Fully");
     } else {
       response.status(400)
@@ -254,7 +255,7 @@ app.delete("/users", checkAuthentication, async(request, response) => {
   const {username} = request.body
   const deleteUserQuery = `DELETE FROM user WHERE username="${username}";`
   await db.run(deleteUserQuery)
-  res.status(200)
+  response.status(200)
   response.send('Delete User Successfully')
 })
 
@@ -266,7 +267,7 @@ app.post('/children', checkAuthentication, async(request, response) => {
   const addChildrenQuery = `INSERT INTO children(name, gender) VALUES("${name}", "${gender}");`;
   if (existChildren === undefined) {
     await db.run(addChildrenQuery);
-    res.status(200)
+    response.status(200)
     response.send("Add Child Successfilly");
   } else {
     response.status(400);
@@ -281,7 +282,7 @@ app.delete('/children', checkAuthentication, async (request, response) => {
    const {name} = request.body 
    const deleteChild = `DELETE FROM children WHERE name="${name}";`
    db.run(deleteChild);
-   res.status(200)
+   response.status(200)
    response.send('Delete Child Succesfully')
 })
 
@@ -312,7 +313,7 @@ app.post('/attendance', checkAuthentication, async(request, response) => {
         // Add Children Status
         const addAttendanceQuery = `INSERT INTO Attendance(childId, date, present) VALUES(${childId}, "${date}", ${present});`;
         await db.run(addAttendanceQuery)
-        res.status(200)
+        response.status(200)
         response.send('Attendance Send Successfully')
       } else {
         // UpDate Children Status
@@ -320,7 +321,7 @@ app.post('/attendance', checkAuthentication, async(request, response) => {
         SET present=${present}
         WHERE childId=${childId} and date="${date}";`
         await db.run(statusUPdateQuery)
-        res.status(200)
+        response.status(200)
         response.send('Attendance Updated Successfully')
       }
             
