@@ -84,8 +84,8 @@ app.post('/services', async (req, res) => {
   
   if (idExist === undefined) {
        await db.run(createServiceQuery);
-       res.status(200)
-       res.send('Service Sucessfully Added');
+    
+       res.send({successMsg: 'Service Sucessfully Added'});
   } else {
     res.status(400);
     res.send({err_msg: 'Id is already exist'});
@@ -102,8 +102,8 @@ app.post('/send-message', async (request, response) => {
   const sequence = /^\d{10}$/;
   if (number.match(sequence)) {
     await db.run(createSendMessageQuery);
-    response.status(200)
-    response.send('Send Message Successfully');
+  
+    response.send({successMsg: 'Send Message Successfully'});
   } else {
       response.status(400)
       response.send({err_msg: 'Please Check Your Number'});
@@ -123,8 +123,8 @@ app.delete("/messages", checkAuthentication, async (request, response) => {
   const {id} = request.body 
   const deleteQuery = `DELETE FROM Messages WHERE id=${id};`
   await db.run(deleteQuery)
-  response.status(200)
-  response.send("Message Delete Successfully");
+ 
+  response.send({successMsg: "Message Delete Successfully"});
 })
 
 
@@ -140,11 +140,11 @@ app.post("/register", async (request, response) => {
             INSERT INTO user (username, password, email, gender)
             VALUES ('${username}', '${hashPassword}'), '${email}', '${gender}';`;
       await db.run(createUserQuery);
-      response.status(200)
-      response.send("User created successfully");
+    
+      response.send({successMsg: "User created successfully"});
   } else {
     response.status(400);
-    response.send("User already exists");
+    response.send({err_msg: "User already exists"});
   }
 });
 
@@ -191,8 +191,8 @@ app.put('/change-username', checkAuthentication, async(request, response) => {
       if (isPasswordMatched) {
         const updateUsernameQuery = `UPDATE user SET username="${newName}" WHERE email="${email}"`;
         await db.run(updateUsernameQuery)
-        response.status(200)
-        response.send("Username updated Success Fully");
+        
+        response.send({successMsg:"Username updated Success Fully"});
       } else {
         response.status(400)
         response.send({err_msg: "Invalid Password"})
@@ -215,8 +215,8 @@ app.put('/change-password', checkAuthentication, async(request, response) => {
     if (emailExist !== undefined) {
       const updateUsernameQuery = `UPDATE user SET password="${hashPassword}" WHERE email="${email}"`;
       await db.run(updateUsernameQuery)
-      response.status(200)
-      response.send("Password updated Success Fully");
+      
+      response.send({successMsg: "Password updated Success Fully"});
     } else {
       response.status(400)
       response.send({err_msg: "Email is not exist"})
@@ -237,8 +237,8 @@ app.put('/change-email', checkAuthentication, async(request, response) => {
     if (isPasswordMatched) {
       const updateUsernameQuery = `UPDATE user SET email="${newEmail}" WHERE username="${username}"`;
       await db.run(updateUsernameQuery)
-      response.status(200)
-      response.send("Email updated Success Fully");
+     
+      response.send({successMsg: "Email updated Success Fully"});
     } else {
       response.status(400)
       response.send({err_msg: "Inavalid Password"})
@@ -255,8 +255,7 @@ app.delete("/users", checkAuthentication, async(request, response) => {
   const {username} = request.body
   const deleteUserQuery = `DELETE FROM user WHERE username="${username}";`
   await db.run(deleteUserQuery)
-  response.status(200)
-  response.send('Delete User Successfully')
+  response.send({successMsg: 'Delete User Successfully'})
 })
 
 // add values Children Table 
@@ -267,8 +266,8 @@ app.post('/children', checkAuthentication, async(request, response) => {
   const addChildrenQuery = `INSERT INTO children(name, gender) VALUES("${name}", "${gender}");`;
   if (existChildren === undefined) {
     await db.run(addChildrenQuery);
-    response.status(200)
-    response.send("Add Child Successfilly");
+   
+    response.send({successMsg: "Add Child Successfilly"});
   } else {
     response.status(400);
     response.send({
@@ -282,8 +281,8 @@ app.delete('/children', checkAuthentication, async (request, response) => {
    const {name} = request.body 
    const deleteChild = `DELETE FROM children WHERE name="${name}";`
    db.run(deleteChild);
-   response.status(200)
-   response.send('Delete Child Succesfully')
+  
+   response.send({successMsg: 'Delete Child Succesfully'})
 })
 
 // Get All Childrens data 
@@ -313,8 +312,8 @@ app.post('/attendance', checkAuthentication, async(request, response) => {
         // Add Children Status
         const addAttendanceQuery = `INSERT INTO Attendance(childId, date, present) VALUES(${childId}, "${date}", ${present});`;
         await db.run(addAttendanceQuery)
-        response.status(200)
-        response.send('Attendance Send Successfully')
+        
+        response.send({successMsg: 'Attendance Send Successfully'})
       } else {
         // UpDate Children Status
         const statusUPdateQuery = `UPDATE Attendance
@@ -322,7 +321,7 @@ app.post('/attendance', checkAuthentication, async(request, response) => {
         WHERE childId=${childId} and date="${date}";`
         await db.run(statusUPdateQuery)
         response.status(200)
-        response.send('Attendance Updated Successfully')
+        response.send({successMsg: 'Attendance Updated Successfully'})
       }
             
     
