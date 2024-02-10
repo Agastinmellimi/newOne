@@ -287,7 +287,7 @@ app.delete('/children', checkAuthentication, async (request, response) => {
 
 // Get All Childrens data 
 app.get('/children', async(request, response) => {
-  const getQuery = `SELECT * FROM children;`
+  const getQuery = `SELECT * FROM children ORDER BY name;`
   const childrenArray = await db.all(getQuery);
   response.send(childrenArray);
 })
