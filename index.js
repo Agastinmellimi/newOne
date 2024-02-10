@@ -297,7 +297,6 @@ app.post('/attendance', checkAuthentication, async(request, response) => {
       const {childId, date, present} = request.body
       const getDateStatusChild = `SELECT * FROM Attendance WHERE childId=${childId} AND date='${date}';`
       const childrenStatus = await db.get(getDateStatusChild);
-      console.log(childrenStatus)
       const currentDate = new Date() 
       
       const fromatteddate = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
@@ -336,8 +335,16 @@ app.get("/attendance-details", async (request, response) => {
   response.send(attendanceDetailsArray);
 })
 
+// get useDetails 
+app.post("/user-details", async (request, response) => {
+  const {username} = request.body
+  const getUserDetailsQuery = `SELECT username, email, gender FROM user WHERE username='${username}';`
+  const userDetails = await db.get(getUserDetailsQuery)
+  response.send(userDetails)
+})
+
 // Get specific Date Attendance details QUERY
-app.get('/date-attendance', async (request, response) => {
+app.post('/date-attendance', async (request, response) => {
   const {date} = request.body
   const dateViceAttendanceQuery = `SELECT children.name, Attendance.present  AS presents FROM children INNER JOIN
   Attendance ON children.id = attendance.childId WHERE Attendance.date = "${date}";`
