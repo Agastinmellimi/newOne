@@ -294,34 +294,36 @@ app.get('/children', async(request, response) => {
 
 // Attendance to children YYYY-MM-DD
 app.post('/attendance', checkAuthentication, async(request, response) => {
-      const {childId, date, present} = request.body
-      const getDateStatusChild = `SELECT * FROM Attendance WHERE childId=${childId} AND date='${date}';`
-      const childrenStatus = await db.get(getDateStatusChild);
-      const currentDate = new Date() 
+      const {array} = request.body
+      array.map(async item => {
+        const {childId, date, present} = item
+        const getDateStatusChild = `SELECT * FROM Attendance WHERE childId=${childId} AND date='${date}';`
+        const childrenStatus = await db.get(getDateStatusChild);
+        if (childrenStatus === undefined) {
+          // Add Children Status
+          const addAttendanceQuery = `INSERT INTO Attendance(childId, date, present) VALUES(${childId}, "${date}", ${present});`;
+          await db.run(addAttendanceQuery)
+          
+        } else {
+          // UpDate Children Status
+          const statusUPdateQuery = `UPDATE Attendance
+          SET present=${present}
+          WHERE childId=${childId} and date="${date}";`
+          await db.run(statusUPdateQuery)
+        }
+      })
+      response.send({successMsg: "Attendance Submitted Successfully"})
+      // const currentDate = new Date() 
       
-      const fromatteddate = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
-      const sendDate = date.split('-')
-      // const checkCurrentDate = fromatteddate.split("-")[2] === `${parseInt(sendDate[2])}`
-      // const checkYear = fromatteddate.split('-')[0] === sendDate[0]
-      // const checkMonth = fromatteddate.split('-')[1] === `${parseInt(sendDate[1])}`
+      // const fromatteddate = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
+      // const sendDate = date.split('-')
+      // // const checkCurrentDate = fromatteddate.split("-")[2] === `${parseInt(sendDate[2])}`
+      // // const checkYear = fromatteddate.split('-')[0] === sendDate[0]
+      // // const checkMonth = fromatteddate.split('-')[1] === `${parseInt(sendDate[1])}`
       
       
-      // if current Date
-      if (childrenStatus === undefined) {
-        // Add Children Status
-        const addAttendanceQuery = `INSERT INTO Attendance(childId, date, present) VALUES(${childId}, "${date}", ${present});`;
-        await db.run(addAttendanceQuery)
-        
-        response.send({successMsg: 'Attendance Send Successfully'})
-      } else {
-        // UpDate Children Status
-        const statusUPdateQuery = `UPDATE Attendance
-        SET present=${present}
-        WHERE childId=${childId} and date="${date}";`
-        await db.run(statusUPdateQuery)
-        response.status(200)
-        response.send({successMsg: 'Attendance Updated Successfully'})
-      }
+      // // if current Date
+      
             
     
       
@@ -335,6 +337,7 @@ app.get("/attendance-details", async (request, response) => {
   response.send(attendanceDetailsArray);
 })
 
+
 // get useDetails 
 app.post("/user-details", async (request, response) => {
   const {username} = request.body
@@ -347,7 +350,7 @@ app.post("/user-details", async (request, response) => {
 app.post('/date-attendance', async (request, response) => {
   const {date} = request.body
   const dateViceAttendanceQuery = `SELECT children.name, Attendance.present  AS presents FROM children INNER JOIN
-  Attendance ON children.id = attendance.childId WHERE Attendance.date = "${date}";`
+  Attendance ON children.id = attendance.childId WHERE Attendance.date = "${date}" ORDER BY children.name ASC;`
   const dateViceAttendanceArray = await db.all(dateViceAttendanceQuery)
   response.send(dateViceAttendanceArray)
 })
@@ -374,6 +377,19 @@ const Childrens = [
   {"name": "HANI MADHABATHULA", "gender": "FEMALE"},
   {"name": "ADAY MADHABATHULA", "gender": "FEMALE"},
   {"name": "SANTHOSH DHANAM", "gender": "MALE"}
+]
+const Attendance = [
+  {"childId": 1, "date": "2022-02-04",  "present": false}, 
+  {"childId": 2, "date": "2022-02-04",  "present": true}, 
+  {"childId": 3, "date": "2022-02-04",  "present": true}, 
+  {"childId": 4, "date": "2022-02-04",  "present": false}, 
+  {"childId": 5, "date": "2022-02-04",  "present": true}, 
+  {"childId": 6, "date": "2022-02-04",  "present": true}, 
+  {"childId": 7, "date": "2022-02-04",  "present": true},
+  {"childId": 8, "date": "2022-02-04",  "present": true}, 
+  {"childId": 9, "date": "2022-02-04",  "present": true},
+  {"childId": 10, "date": "2022-02-04",  "present": true},
+  {"childId": 11, "date": "2022-02-04",  "present": true}
 ]
 // Get All children ATTENDANCE DETAILS QUERY
 // SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS attendance FROM children INNER JOIN
