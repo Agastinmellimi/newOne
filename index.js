@@ -258,7 +258,7 @@ app.delete("/users", checkAuthentication, async(request, response) => {
   response.send({successMsg: 'Delete User Successfully'})
 })
 
-// add values Children Table 
+// add Children Table 
 app.post('/children', checkAuthentication, async(request, response) => {
   const {name, gender} = request.body 
   const existChildrenQuery = `SELECT * FROM children WHERE name="${name}";`
@@ -278,10 +278,32 @@ app.post('/children', checkAuthentication, async(request, response) => {
 
 // Delete Children 
 app.delete('/children', checkAuthentication, async (request, response) => {
-   const {name} = request.body 
+   const {name, id} = request.body 
    const deleteChild = `DELETE FROM children WHERE name="${name}";`
-   db.run(deleteChild);
+   const deleteAttendanceQuery = `DELETE FROM Attendance WHERE childId=${id}`
+   await db.run(deleteChild);
+   await db.run(deleteAttendanceQuery)
    response.send({successMsg: 'Delete Child Succesfully'})
+})
+// example
+// {
+//   "previousName": "NAGACHAITANYA PAMU",
+//   "newName": "NAGA CHAITANYA PAMU",
+//   "gender": "MALE"
+// }
+app.put('/children', checkAuthentication, async (request, response) => {
+  const {previousName, newName, gender} = request.body
+  const checkPreviousNameQuery = `SELECT * FROM children WHERE name="${previousName}";`;
+  const existChilldren = await db.get(checkPreviousNameQuery)
+  console.log(previousName, newName, gender)
+  if (existChilldren === undefined) {
+    response.status(400)
+    response.send({err_msg: "your previous name is not exist"})
+  } else {
+    const updateQuery = `UPDATE children SET name='${newName}', gender='${gender}' WHERE name='${previousName}';`
+    await db.run(updateQuery)
+    response.send({successMsg: "Child Updated Successfully"})
+  }
 })
 
 // Get All Childrens data 
@@ -322,9 +344,6 @@ app.post('/attendance', checkAuthentication, async(request, response) => {
       
       
       // // if current Date
-      
-            
-    
       
 })
 
@@ -374,7 +393,7 @@ const Childrens = [
   {"name": "PRAVEEN KUMAR PALLI", "gender": "MALE"},
   {"name": "RAVISAGAR NEPA", "gender": "MALE"}, 
   {"name": "HANI MADHABATHULA", "gender": "FEMALE"},
-  {"name": "ADAY MADHABATHULA", "gender": "FEMALE"},
+  {"name": "ADYA MADHABATHULA", "gender": "FEMALE"},
   {"name": "SANTHOSH DHANAM", "gender": "MALE"}
 ]
 const Attendance = [
