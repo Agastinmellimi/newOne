@@ -399,8 +399,7 @@ const Attendance = [
 // SELECT children.name, Attendance.present  AS attendance FROM children INNER JOIN
 //  Attendance ON children.id = attendance.childId WHERE Attendance.date = "2024-02-04";
 
-// GET DISTINCT DATES FROM Attendance table
-// SELECT DISTINCT date FROM Attendance;
+
 
 
 // Day find to date
