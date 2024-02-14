@@ -103,7 +103,7 @@ app.post('/send-message', async (request, response) => {
   if (number.match(sequence)) {
     await db.run(createSendMessageQuery);
   
-    response.send({successMsg: 'Send Message Successfully'});
+    response.send({successMsg: 'Send message successfully'});
   } else {
       response.status(400)
       response.send({err_msg: 'Please Check Your Number'});
@@ -124,7 +124,7 @@ app.delete("/messages", checkAuthentication, async (request, response) => {
   const deleteQuery = `DELETE FROM Messages WHERE id=${id};`
   await db.run(deleteQuery)
  
-  response.send({successMsg: "Message Delete Successfully"});
+  response.send({successMsg: "Message delete successfully"});
 })
 
 
@@ -255,7 +255,7 @@ app.delete("/users", checkAuthentication, async(request, response) => {
   const {username} = request.body
   const deleteUserQuery = `DELETE FROM user WHERE username="${username}";`
   await db.run(deleteUserQuery)
-  response.send({successMsg: 'Delete User Successfully'})
+  response.send({successMsg: 'Delete user successfully'})
 })
 
 // add Children Table 
@@ -267,11 +267,11 @@ app.post('/children', checkAuthentication, async(request, response) => {
   if (existChildren === undefined) {
     await db.run(addChildrenQuery);
    
-    response.send({successMsg: "Add Child Successfilly"});
+    response.send({successMsg: "Add child successfilly"});
   } else {
     response.status(400);
     response.send({
-      err_msg: 'Child Already Exist',
+      err_msg: 'Child name already exist',
     })
   }
 })
@@ -283,7 +283,7 @@ app.delete('/children', checkAuthentication, async (request, response) => {
    const deleteAttendanceQuery = `DELETE FROM Attendance WHERE childId=${id}`
    await db.run(deleteChild);
    await db.run(deleteAttendanceQuery)
-   response.send({successMsg: 'Delete Child Succesfully'})
+   response.send({successMsg: 'Delete child succesfully'})
 })
 // example
 // {
@@ -302,7 +302,7 @@ app.put('/children', checkAuthentication, async (request, response) => {
   } else {
     const updateQuery = `UPDATE children SET name='${newName}', gender='${gender}' WHERE name='${previousName}';`
     await db.run(updateQuery)
-    response.send({successMsg: "Child Updated Successfully"})
+    response.send({successMsg: "Child updated successfully"})
   }
 })
 
@@ -333,7 +333,7 @@ app.post('/attendance', checkAuthentication, async(request, response) => {
           await db.run(statusUPdateQuery)
         }
       })
-      response.send({successMsg: "Attendance Submitted Successfully"})
+      response.send({successMsg: "Attendance submitted successfully"})
       // const currentDate = new Date() 
       
       // const fromatteddate = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
