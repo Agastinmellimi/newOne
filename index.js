@@ -192,7 +192,7 @@ app.put('/change-username', checkAuthentication, async(request, response) => {
         const updateUsernameQuery = `UPDATE user SET username="${newName}" WHERE email="${email}"`;
         await db.run(updateUsernameQuery)
         
-        response.send({successMsg:"Username updated Success Fully"});
+        response.send({successMsg:"Username updated Successfully"});
       } else {
         response.status(400)
         response.send({err_msg: "Invalid Password"})
@@ -216,7 +216,7 @@ app.put('/change-password', checkAuthentication, async(request, response) => {
       const updateUsernameQuery = `UPDATE user SET password="${hashPassword}" WHERE email="${email}"`;
       await db.run(updateUsernameQuery)
       
-      response.send({successMsg: "Password updated Success Fully"});
+      response.send({successMsg: "Password updated Successfully"});
     } else {
       response.status(400)
       response.send({err_msg: "Email is not exist"})
@@ -238,7 +238,7 @@ app.put('/change-email', checkAuthentication, async(request, response) => {
       const updateUsernameQuery = `UPDATE user SET email="${newEmail}" WHERE username="${username}"`;
       await db.run(updateUsernameQuery)
      
-      response.send({successMsg: "Email updated Success Fully"});
+      response.send({successMsg: "Email updated Successfully"});
     } else {
       response.status(400)
       response.send({err_msg: "Inavalid Password"})
@@ -267,7 +267,7 @@ app.post('/children', checkAuthentication, async(request, response) => {
   if (existChildren === undefined) {
     await db.run(addChildrenQuery);
    
-    response.send({successMsg: "Add child successfilly"});
+    response.send({successMsg: "Add child successfully"});
   } else {
     response.status(400);
     response.send({
