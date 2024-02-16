@@ -138,9 +138,8 @@ app.post("/register", async (request, response) => {
   if (dbUser === undefined) {
     const createUserQuery = `
             INSERT INTO user (username, password, email, gender)
-            VALUES ('${username}', '${hashPassword}'), '${email}', '${gender}';`;
+            VALUES ("${username}", "${hashPassword}", "${email}", "${gender}");`;
       await db.run(createUserQuery);
-    
       response.send({successMsg: "User created successfully"});
   } else {
     response.status(400);
