@@ -279,7 +279,9 @@ app.post('/children', checkAuthentication, async(request, response) => {
 app.delete('/children', checkAuthentication, async (request, response) => {
    const {name} = request.body 
    const deleteChild = `DELETE FROM children WHERE name="${name}";`
-   const deleteAttendanceQuery = `DELETE Attendance FROM Attendance INNER JOIN children ON Attendance.childId = children.id WHERE children.name="${name}";`
+   const idQuery = `SELECT id FROM children WHERE name="${name}"`
+   const childId = await db.get(idQuery)
+   const deleteAttendanceQuery = `DELETE FROM Attendance WHERE childId=${childId.id};`
    await db.run(deleteChild);
    await db.run(deleteAttendanceQuery)
    response.send({successMsg: 'Delete child succesfully'})
