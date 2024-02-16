@@ -414,9 +414,6 @@ const Attendance = [
 // SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS attendance FROM children INNER JOIN
 //  Attendance ON children.id = attendance.childId GROUP BY children.name;
 
-// Get specific Date Attendance details QUERY
-// SELECT children.name, Attendance.present  AS attendance FROM children INNER JOIN
-//  Attendance ON children.id = attendance.childId WHERE Attendance.date = "2024-02-04";
 
 
 
