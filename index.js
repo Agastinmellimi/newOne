@@ -350,7 +350,7 @@ app.post('/attendance', checkAuthentication, async(request, response) => {
 
 // GET ALL STUDENTS ATTENDANCE DETAILS 
 app.get("/attendance-details", async (request, response) => {
-  const getAttendanceQuery =  `SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS presents FROM children INNER JOIN
+  const getAttendanceQuery =  `SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS presents FROM children LEFT JOIN
   Attendance ON children.id = attendance.childId GROUP BY children.name;`
   const attendanceDetailsArray = await db.all(getAttendanceQuery);
   response.send(attendanceDetailsArray);
