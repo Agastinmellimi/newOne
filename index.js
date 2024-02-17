@@ -356,6 +356,19 @@ app.get("/attendance-details", async (request, response) => {
   response.send(attendanceDetailsArray);
 })
 
+app.delete("/attendance", checkAuthentication, async(request, response) => {
+     const {date} = request.body 
+     const dateExistQuery = `SELECT DISTINCT date FROM Attendance WHERE date="${date}";`
+     const dateExist = await db.get(dateExistQuery)
+     if (dateExist !== undefined) {
+               const deleteDataAttendanceQuery = `DELETE FROM Attendance WHERE date='${date}';`
+               await db.run(deleteDataAttendanceQuery)
+               response.send({successMsg: 'Attendance deleted successfully'})
+     } else {
+      response.status(400)
+      response.send({err_msg: 'Date does not exist'})
+     }
+})
 
 // get useDetails 
 app.post("/user-details", async (request, response) => {
@@ -398,18 +411,18 @@ const Childrens = [
   {"name": "SANTHOSH DHANAM", "gender": "MALE"}
 ]
 const Attendance = [
-  {"childId": 1, "date": "2024-02-11",  "present": true}, 
-  {"childId": 2, "date": "2024-02-11",  "present": false}, 
-  {"childId": 3, "date": "2024-02-11",  "present": true}, 
-  {"childId": 4, "date": "2024-02-11",  "present": true}, 
-  {"childId": 5, "date": "2024-02-11",  "present": true}, 
-  {"childId": 6, "date": "2024-02-11",  "present": true}, 
-  {"childId": 7, "date": "2024-02-11",  "present": true},
-  {"childId": 8, "date": "2024-02-11",  "present": true}, 
-  {"childId": 9, "date": "2024-02-11",  "present": false},
-  {"childId": 10, "date": "2024-02-11",  "present": false},
-  {"childId": 11, "date": "2024-02-11",  "present": true},
-  {"childId": 12, "date": "2024-02-11",  "present": true}
+  {"childId": 1, "date": "2024-02-17",  "present": true}, 
+  {"childId": 2, "date": "2024-02-17",  "present": false}, 
+  {"childId": 3, "date": "2024-02-17",  "present": true}, 
+  {"childId": 4, "date": "2024-02-17",  "present": true}, 
+  {"childId": 5, "date": "2024-02-17",  "present": true}, 
+  {"childId": 6, "date": "2024-02-17",  "present": true}, 
+  {"childId": 7, "date": "2024-02-17",  "present": true},
+  {"childId": 8, "date": "2024-02-17",  "present": true}, 
+  {"childId": 9, "date": "2024-02-17",  "present": false},
+  {"childId": 10, "date": "2024-02-17",  "present": false},
+  {"childId": 11, "date": "2024-02-17",  "present": true},
+  {"childId": 12, "date": "2024-02-17",  "present": true}
 ]
 // Get All children ATTENDANCE DETAILS QUERY
 // SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS attendance FROM children INNER JOIN
