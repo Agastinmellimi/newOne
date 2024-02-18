@@ -1,6 +1,6 @@
 const express = require('express');
 const {open} = require('sqlite');
-const sqlite3 = require('sqlite3')
+const sqlite3 = require('sqlite3').verbose()
 const path = require('path');
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken')
@@ -17,10 +17,12 @@ app.use((req, res, next) => {
   next();
 });
 
-const dbPath = path.join(__dirname, 'userData.db')
+
+
+const dbPath = path.join(__dirname, "userData.db");
 let db = null;
 
-const intializeServer = async () => {
+const intializeDbAndServer = async () => {
   try {
     db = await open({
       filename: dbPath,
@@ -28,15 +30,14 @@ const intializeServer = async () => {
     });
     app.listen(3005, () => {
       console.log("Server Running at http://localhost:3005/");
-      
     });
   } catch (e) {
     console.log(`DB Error: ${e.message}`);
     process.exit(1);
   }
-}
+};
 
-intializeServer()
+intializeDbAndServer()
 
 // chech Authentication Middleware function 
 const checkAuthentication = (req, res, next) => {
