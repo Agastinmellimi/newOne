@@ -6,14 +6,23 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken')
 const cors = require("cors");
 
+
 const app = express();
 
 app.use(express.json());
 app.use(cors())
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader("Access-Control-Allow-Private-Network", true);
+  //  Firefox caps this at 24 hours (86400 seconds). Chromium (starting in v76) caps at 2 hours (7200 seconds). The default value is 5 seconds.
+  res.setHeader("Access-Control-Max-Age", 7200)
   next();
 });
 
@@ -21,6 +30,9 @@ app.use((req, res, next) => {
 
 const dbPath = path.join(__dirname, './userData.db');
 let db = null;
+
+
+
 
 const intializeDbAndServer = async () => {
   try {
@@ -269,7 +281,7 @@ app.post('/children', checkAuthentication, async(request, response) => {
    
     response.send({successMsg: "Add child successfully"});
   } else {
-    response.status(400);
+    response.status(400);   
     response.send({
       err_msg: 'Child name already exist',
     })
@@ -412,18 +424,18 @@ const Childrens = [
   {"name": "SANTHOSH DHANAM", "gender": "MALE"}
 ]
 const Attendance = [
-  {"childId": 1, "date": "2024-02-17",  "present": true}, 
-  {"childId": 2, "date": "2024-02-17",  "present": false}, 
-  {"childId": 3, "date": "2024-02-17",  "present": true}, 
-  {"childId": 4, "date": "2024-02-17",  "present": true}, 
-  {"childId": 5, "date": "2024-02-17",  "present": true}, 
-  {"childId": 6, "date": "2024-02-17",  "present": true}, 
-  {"childId": 7, "date": "2024-02-17",  "present": true},
-  {"childId": 8, "date": "2024-02-17",  "present": true}, 
-  {"childId": 9, "date": "2024-02-17",  "present": false},
-  {"childId": 10, "date": "2024-02-17",  "present": false},
-  {"childId": 11, "date": "2024-02-17",  "present": true},
-  {"childId": 12, "date": "2024-02-17",  "present": true}
+  {"childId": 1, "date": "2024-02-18",  "present": true}, 
+  {"childId": 2, "date": "2024-02-18",  "present": true}, 
+  {"childId": 3, "date": "2024-02-18",  "present": true}, 
+  {"childId": 4, "date": "2024-02-18",  "present": true}, 
+  {"childId": 5, "date": "2024-02-18",  "present": true}, 
+  {"childId": 6, "date": "2024-02-18",  "present": true}, 
+  {"childId": 7, "date": "2024-02-18",  "present": true},
+  {"childId": 8, "date": "2024-02-18",  "present": true}, 
+  {"childId": 9, "date": "2024-02-18",  "present": false},
+  {"childId": 10, "date": "2024-02-18",  "present": false},
+  {"childId": 11, "date": "2024-02-18",  "present": true},
+  {"childId": 12, "date": "2024-02-18",  "present": false}
 ]
 // Get All children ATTENDANCE DETAILS QUERY
 // SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS attendance FROM children INNER JOIN
