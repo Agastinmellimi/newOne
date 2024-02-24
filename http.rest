@@ -27,13 +27,3 @@ Content-Type: application/json
 GET http://localhost:3005/users
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFnYXN0aW4iLCJpYXQiOjE3MDg3MDQxNjF9.arxD6WG2CGCPcWh9YxEbm_TUrcCMQ39TJEAbdNUmRrE
-
-###
-POST http://localhost:3005/services
-Content-Type: application/json
-
-{
-    "service": "Special Meeting",
-    "image": "https://res.cloudinary.com/dkrpgt9kd/image/upload/v1706610870/atraogmd5cdem5b0amti.jpg",
-   " description":"Every month first friday 11:00AM to 2:00PM"
-}
