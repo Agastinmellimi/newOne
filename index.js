@@ -90,20 +90,14 @@ app.get('/services', async (req, res) => {
 
 // post services in Services table 
 app.post('/services', async (req, res) => {
-  const {id, service, image, description} = req.body
-  let IdExistQuery = `SELECT * FROM Services WHERE id=${id};`
-  const idExist = await db.get(IdExistQuery);
-  const createServiceQuery = `INSERT INTO Services(id, service, image, description)
-                              VALUES (${id}, "${service}", "${image}", "${description}");`
+  const {service, image, description} = req.body
   
-  if (idExist === undefined) {
-       await db.run(createServiceQuery);
-    
-       res.send({successMsg: 'Service Sucessfully Added'});
-  } else {
-    res.status(400);
-    res.send({err_msg: 'Id is already exist'});
-  }
+  const createServiceQuery = `INSERT INTO Services(service, image, description)
+                              VALUES ("${service}", "${image}", "${description}");`
+  
+  await db.run(createServiceQuery)
+  res.send({successMsg: 'Service Sucessfully Added'});
+  
   
 })
 
