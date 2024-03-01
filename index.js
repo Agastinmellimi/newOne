@@ -364,7 +364,7 @@ app.get("/attendance-details", async (request, response) => {
   response.send(attendanceDetailsArray);
 })
 
-app.get("/month-status", async (request, response) => {
+app.post("/month-status", async (request, response) => {
   const {month, year} = request.body
   const monthExistQuery = `SELECT DISTINCT date FROM Attendance WHERE strftime('%m', date) ='${month}';`
   const monthExist = await db.all(monthExistQuery)

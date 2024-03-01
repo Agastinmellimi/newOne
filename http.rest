@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3005/month-status
+POST http://localhost:3005/month-status
 Content-Type: application/json
 
 {
