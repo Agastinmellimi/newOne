@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3005/attendance-dates
+GET http://localhost:3005/attendance-details
 
 ###
 POST http://localhost:3005/login

@@ -364,6 +364,32 @@ app.get("/attendance-details", async (request, response) => {
   response.send(attendanceDetailsArray);
 })
 
+app.get("/month-status", async (request, response) => {
+  const {month, year} = request.body
+  const monthExistQuery = `SELECT DISTINCT date FROM Attendance WHERE strftime('%m', date) ='${month}';`
+  const monthExist = await db.all(monthExistQuery)
+  const yearExistQuery = `SELECT DISTINCT date FROM Attendance WHERE strftime('%Y', date) ='${year}';`
+  const yearExist = await db.all(yearExistQuery)
+  
+  if (yearExist.length === 0) {
+     response.status(400)
+     response.send({err_msg: `Sorry!, search year cannot exist`})
+  }  else {
+       if (monthExist.length === 0) {
+        response.status(400)
+        response.send({err_msg: `Sorry!, search month cannot exist`})
+       } else {
+        const getAttendanceQuery =  `SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS presents FROM children LEFT JOIN
+        Attendance ON children.id = attendance.childId WHERE strftime('%Y', date) ='${year}' AND strftime('%m', date) ='${month}' GROUP BY children.name;`
+        const attendanceDetailsArray = await db.all(getAttendanceQuery);
+        response.send(attendanceDetailsArray);
+       }
+  }
+  
+})
+
+
+
 app.delete("/attendance", checkAuthentication, async(request, response) => {
      const {date} = request.body 
      const dateExistQuery = `SELECT DISTINCT date FROM Attendance WHERE date="${date}";`
