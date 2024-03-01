@@ -10,7 +10,13 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3005/attendance-details
+GET http://localhost:3005/month-status
+Content-Type: application/json
+
+{
+  "month": "02",
+  "year": "2024"
+}
 
 ###
 POST http://localhost:3005/login
