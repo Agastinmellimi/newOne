@@ -10,8 +10,12 @@ Content-Type: application/json
 }
 
 ###
-GET  http://localhost:3005/attendance-dates
+GET  http://localhost:3005/date-attendance
 Content-Type: application/json
+
+{
+    "date": "2024-03-03"
+}
 
 ###
 POST http://localhost:3005/login
