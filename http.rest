@@ -10,13 +10,8 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3005/month-status
+GET  http://localhost:3005/attendance-dates
 Content-Type: application/json
-
-{
-  "month": "02",
-  "year": "2024"
-}
 
 ###
 POST http://localhost:3005/login
@@ -48,17 +43,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFnY
 
 {
   "array": [
-  {"childId": 1, "date": "2024-02-25",  "present": false},
-  {"childId": 2, "date": "2024-02-25",  "present": false},
-  {"childId": 3, "date": "2024-02-25",  "present": false}, 
-  {"childId": 4, "date": "2024-02-25",  "present": false},
-  {"childId": 5, "date": "2024-02-25",  "present": true}, 
-  {"childId": 6, "date": "2024-02-25",  "present": true}, 
-  {"childId": 7, "date": "2024-02-25",  "present": true},
-  {"childId": 8, "date": "2024-02-25",  "present": true}, 
-  {"childId": 9, "date": "2024-02-25",  "present": false},
-  {"childId": 10, "date": "2024-02-25",  "present": false},
-  {"childId": 11, "date": "2024-02-25",  "present": false}
+  {"childId": 1, "date": "2024-03-03",  "present": false},
+  {"childId": 2, "date": "2024-03-03",  "present": false},
+  {"childId": 3, "date": "2024-03-03",  "present": false}, 
+  {"childId": 4, "date": "2024-03-03",  "present": false},
+  {"childId": 5, "date": "2024-03-03",  "present": true}, 
+  {"childId": 6, "date": "2024-03-03",  "present": true}, 
+  {"childId": 7, "date": "2024-03-03",  "present": true},
+  {"childId": 8, "date": "2024-03-03",  "present": true}, 
+  {"childId": 9, "date": "2024-03-03",  "present": false},
+  {"childId": 10, "date": "2024-03-03",  "present": false},
+  {"childId": 11, "date": "2024-03-03",  "present": false}
 ]
 }
 
