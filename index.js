@@ -445,17 +445,17 @@ const Childrens = [
   {"name": "SANTHOSH DHANAM", "gender": "MALE"}
 ]
 const Attendance = [
-  {"childId": 1, "date": "2024-02-25",  "present": true}, //RISHI CHELLE
-  {"childId": 2, "date": "2024-02-25",  "present": true}, //MOJESH CHELLE
-  {"childId": 3, "date": "2024-02-25",  "present": true}, //HARSHA VARDHAN
-  {"childId": 4, "date": "2024-02-25",  "present": true}, //JOSHNA CHELLE
+  {"childId": 1, "date": "2024-02-25",  "present": false}, //RISHI CHELLE
+  {"childId": 2, "date": "2024-02-25",  "present": false}, //MOJESH CHELLE
+  {"childId": 3, "date": "2024-02-25",  "present": false}, //HARSHA VARDHAN
+  {"childId": 4, "date": "2024-02-25",  "present": false}, //JOSHNA CHELLE
   {"childId": 5, "date": "2024-02-25",  "present": true}, //UDAY KRISHNA KURMA
   {"childId": 6, "date": "2024-02-25",  "present": true}, //SRINIVAS KURMA
   {"childId": 7, "date": "2024-02-25",  "present": true},//PRAVEEN KUMAR PALLI
   {"childId": 8, "date": "2024-02-25",  "present": true}, //RAVISAGAR NEPA
-  {"childId": 9, "date": "2024-02-25",  "present": true},//HANI MADHABATHULA
-  {"childId": 10, "date": "2024-02-25",  "present": true},//ADYA MADHABATHULA
-  {"childId": 11, "date": "2024-02-25",  "present": true},//SANTHOSH DHANAM
+  {"childId": 9, "date": "2024-02-25",  "present": false},//HANI MADHABATHULA
+  {"childId": 10, "date": "2024-02-25",  "present": false},//ADYA MADHABATHULA
+  {"childId": 11, "date": "2024-02-25",  "present": false},//SANTHOSH DHANAM
 ]
 // Get All children ATTENDANCE DETAILS QUERY
 // SELECT children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS attendance FROM children INNER JOIN
