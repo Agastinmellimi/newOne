@@ -18,7 +18,7 @@ POST  http://localhost:3005/date-attendance
 Content-Type: application/json
 
 {
-    "date": "2024-03-10"
+    "date": "2024-03-17"
 }
 
 ###

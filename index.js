@@ -399,10 +399,17 @@ app.post("/user-details", async (request, response) => {
 // Get specific Date Attendance details QUERY
 app.post("/date-attendance", async (request, response) => {
   const { date } = request.body;
-  const dateViceAttendanceQuery = `SELECT children.name, Attendance.present  AS presents FROM children INNER JOIN
-  Attendance ON children.id = attendance.childId WHERE Attendance.date = "${date}" ORDER BY children.name ASC;`;
-  const dateViceAttendanceArray = await db.all(dateViceAttendanceQuery);
-  response.send(dateViceAttendanceArray);
+  const checkDateExistQuery = `SELECT * FROM Attendance WHERE date="${date}";`;
+  const checkExistDate = await db.get(checkDateExistQuery);
+  if (checkExistDate !== undefined) {
+    const dateViceAttendanceQuery = `SELECT children.name, Attendance.present  AS presents FROM children INNER JOIN
+      Attendance ON children.id = attendance.childId WHERE Attendance.date = "${date}" ORDER BY children.name ASC;`;
+    const dateViceAttendanceArray = await db.all(dateViceAttendanceQuery);
+    response.send(dateViceAttendanceArray);
+  } else {
+    response.status(400);
+    response.send({ err_msg: "Date does not exist!" });
+  }
 });
 
 // get distinct dates from Attendance Table
