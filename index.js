@@ -408,7 +408,9 @@ app.post("/date-attendance", async (request, response) => {
     response.send(dateViceAttendanceArray);
   } else {
     response.status(400);
-    response.send({ err_msg: "Date does not exist!" });
+    response.send({
+      err_msg: "Oops!, On this date attendance not registered.",
+    });
   }
 });
 
