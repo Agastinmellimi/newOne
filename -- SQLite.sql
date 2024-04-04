@@ -6,7 +6,7 @@
 -- );
 
 -- INSERT INTO scores(scores, id) 
--- VALUES(10, 1);
+-- VALUES(11, 1);
 
 -- DELETE FROM scores WHERE id = 1;
 -- DROP TABLE scores;
