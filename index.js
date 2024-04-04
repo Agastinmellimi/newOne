@@ -351,6 +351,35 @@ app.get("/attendance-details", async (request, response) => {
   response.send(attendanceDetailsArray);
 });
 
+app.post("/children-scores", async (request, response) => {
+  // const getAttendanceQuery = `SELECT children.name, (SELECT scores FROM scores GROUP BY id) AS scores FROM children LEFT JOIN
+  // scores ON children.id = scores.id GROUP BY  children.id;`;
+  // const attendanceDetailsArray = await db.all(getAttendanceQuery);
+  // response.send(attendanceDetailsArray);
+  const { id } = request.body;
+  const getAttendanceQuery = `SELECT scores FROM children LEFT JOIN
+  scores ON children.id = scores.id WHERE children.id = ${id};`;
+
+  const attendanceDetailsArray = await db.all(getAttendanceQuery);
+  const data = attendanceDetailsArray.map((item) =>
+    item.scores !== null ? item.scores : 0
+  );
+  response.send(data);
+});
+
+app.post("/update-scores", async (request, response) => {
+  const { id, score } = request.body;
+  const idExistQuery = `SELECT * FROM children WHERE id=${id};`;
+  const idExist = await db.get(idExistQuery);
+  if (idExist !== undefined) {
+    const updateQuery = `INSERT INTO scores(scores, id) VALUES(${score}, ${id});`;
+    await db.run(updateQuery);
+    response.send({ success_msg: "Scores added successfully" });
+  } else {
+    response.send({ err_msg: "Id not exist" });
+  }
+});
+
 app.post("/month-status", async (request, response) => {
   const { month, year } = request.body;
   const monthExistQuery = `SELECT DISTINCT date FROM Attendance WHERE strftime('%m', date) ='${month}';`;
