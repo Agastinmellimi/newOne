@@ -351,19 +351,21 @@ app.get("/attendance-details", async (request, response) => {
   response.send(attendanceDetailsArray);
 });
 
-app.post("/children-scores", async (request, response) => {
+app.get("/children-scores", async (request, response) => {
   // const getAttendanceQuery = `SELECT children.name, (SELECT scores FROM scores GROUP BY id) AS scores FROM children LEFT JOIN
   // scores ON children.id = scores.id GROUP BY  children.id;`;
   // const attendanceDetailsArray = await db.all(getAttendanceQuery);
   // response.send(attendanceDetailsArray);
-  const { id } = request.body;
-  const getAttendanceQuery = `SELECT scores FROM children LEFT JOIN
-  scores ON children.id = scores.id WHERE children.id = ${id};`;
+
+  // const { id } = request.body;
+  const getAttendanceQuery = `SELECT children.id, SUM(scores) AS score FROM children LEFT JOIN
+  scores ON children.id = scores.id GROUP BY children.id`;
 
   const attendanceDetailsArray = await db.all(getAttendanceQuery);
-  const data = attendanceDetailsArray.map((item) =>
-    item.scores !== null ? item.scores : 0
-  );
+  const data = attendanceDetailsArray.map((item) => ({
+    ...item,
+    score: item.score === null ? 0 : item.score,
+  }));
   response.send(data);
 });
 
