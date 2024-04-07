@@ -358,7 +358,7 @@ app.get("/children-scores", async (request, response) => {
   // response.send(attendanceDetailsArray);
 
   // const { id } = request.body;
-  const getAttendanceQuery = `SELECT children.id, SUM(scores) AS score FROM children LEFT JOIN
+  const getAttendanceQuery = `SELECT children.id, children.name, SUM(scores) AS score FROM children LEFT JOIN
   scores ON children.id = scores.id GROUP BY children.id`;
 
   const attendanceDetailsArray = await db.all(getAttendanceQuery);
