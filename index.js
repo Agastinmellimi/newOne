@@ -348,7 +348,13 @@ app.get("/attendance-details", async (request, response) => {
   const getAttendanceQuery = `SELECT children.id, children.name, SUM(CASE WHEN Attendance.present = 1 THEN 1 ELSE 0 END) AS presents, children.gender FROM children LEFT JOIN
   Attendance ON children.id = attendance.childId GROUP BY children.name;`;
   const attendanceDetailsArray = await db.all(getAttendanceQuery);
-  response.send(attendanceDetailsArray);
+  const getExistDatesQury = `SELECT COUNT(DISTINCT date) AS working_days FROM Attendance;`;
+  const existDates = await db.get(getExistDatesQury);
+  const data = {
+    workingDays: existDates.working_days,
+    details: attendanceDetailsArray,
+  };
+  response.send(data);
 });
 
 app.get("/children-scores", async (request, response) => {
