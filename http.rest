@@ -77,7 +77,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFnY
   {"childId": 8, "date": "2024-04-28",  "present": false}, 
   {"childId": 9, "date": "2024-04-28",  "present": false},
   {"childId": 10, "date": "2024-04-28",  "present": false},
-  {"childId": 11, "date": "2024-04-28", "present": false}
+  {"childId": 11, "date": "2024-04-28", "present": true}
 ]
 }
 
