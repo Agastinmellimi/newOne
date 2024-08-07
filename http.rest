@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ###
-GET  http://localhost:3008/attendance-details
+GET  http://localhost:3005/attendance-details
 Content-Type: application/json
 
 ###
@@ -29,7 +29,7 @@ Content-Type: application/json
 }
 
 ###
-POST  http://localhost:3008/date-attendance
+POST  http://localhost:3005/date-attendance
 Content-Type: application/json
 
 {
